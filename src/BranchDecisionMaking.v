@@ -15,7 +15,6 @@ module BranchDecisionMaking(
     input wire [31:0] Operand1,Operand2,
     output reg BranchE
     );
-endmodule
 
 //功能和接口说明
     //BranchDecisionMaking接受两个操作数，根据BranchTypeE的不同，进行不同的判断，当分支应该taken时，令BranchE=1'b1
@@ -28,3 +27,18 @@ endmodule
     //endcase
 //实验要求  
     //实现BranchDecisionMaking模块
+    
+    always@(*) begin
+        case(BranchTypeE)
+            `NOBRANCH: BranchE = 0;
+            `BEQ: BranchE = (Operand1 == Operand2);
+            `BNE: BranchE = (Operand1 != Operand2);
+            `BLT: BranchE = ($signed(Operand1) < $signed(Operand2));
+            `BLTU: BranchE = (Operand1 < Operand2);
+            `BGE: BranchE = ($signed(Operand1) >= $signed(Operand2));
+            `BGEU: BranchE = (Operand1 >= Operand2);
+            default: BranchE = 0;
+        endcase
+    end
+
+endmodule

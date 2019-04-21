@@ -13,8 +13,8 @@
 // !!! ALL YOU NEED TO CHANGE IS 4 FILE PATH BELOW !!!	
 //				(they are all optional, you can run cpu without change paths here,if files are failed to open, we will not dump the content to .txt and will not try to initial your bram)
 //////////////////////////////////////////////////////////////////////////////////
-`define DataRamContentLoadPath "C:\\test\\test.data"
-`define InstRamContentLoadPath "C:\\test\\testi.inst"
+`define DataRamContentLoadPath "C:\\test\\1testAll.data"
+`define InstRamContentLoadPath "C:\\test\\1testAll.inst"
 `define DataRamContentSavePath "C:\\test\\DataRamContent.txt"
 `define InstRamContentSavePath "C:\\test\\InstRamContent.txt"
 `define BRAMWORDS 4096  //a word is 32bit, so our bram is 4096*32bit

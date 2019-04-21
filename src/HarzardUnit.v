@@ -50,21 +50,61 @@ module HarzardUnit(
             FlushE = 1;
             FlushM = 1;
             FlushW = 1;
+
+            StallF = 0;
+            StallD = 0;
+            StallE = 0;
+            StallM = 0;
+            StallW = 0;
+            
+            Forward1E = 0;
+            Forward2E = 0;
         end
         else begin
+            StallF = 0;
+            StallD = 0;
+            StallE = 0;
+            StallM = 0;
+            StallW = 0;
+
             FlushF = 0;
             FlushD = 0;
             FlushE = 0;
             FlushM = 0;
             FlushW = 0;
+
+            if (MemToRegE && (RdE == Rs1D || RdE == Rs2D) && RdE != 0) begin
+                StallF = 1;
+                StallD = 1;
+            end
+            else if (BranchE || JalrE) begin
+                FlushD = 1;
+                FlushE = 1;
+            end
+            else if (JalD) begin
+                FlushD = 1;
+            end
         end
-        StallF = 0;
-        StallD = 0;
-        StallE = 0;
-        StallM = 0;
-        StallW = 0;
+
         Forward1E = 0;
         Forward2E = 0;
+
+        if (RegWriteM != 0 && RdM != 0) begin
+            if (RdM == Rs1E && RegReadE[1])
+                Forward1E = 2'b10;
+            if (RdM == Rs2E && RegReadE[0])
+                Forward2E = 2'b10;
+        end
+        if (RegWriteW != 0 && RdW != 0) begin
+            if (!(RegWriteM != 0 && RdM == Rs1E))
+                if (RdW == Rs1E && RegReadE[1])
+                    Forward1E = 2'b01;
+            if (!(RegWriteM != 0 && RdM == Rs2E))
+                if (RdW == Rs2E && RegReadE[0])
+                    Forward2E = 2'b01;
+        end
     end
 
 endmodule
+
+
