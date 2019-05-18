@@ -7,7 +7,7 @@ module cache_tb();
 `define DATA_COUNT (256)
 `define RDWR_COUNT (6*`DATA_COUNT)
 
-reg wr_cycle           [`RDWR_COUNT];
+reg wr_cycle           [`RDWR_COUNT:0];
 reg rd_cycle           [`RDWR_COUNT];
 reg [31:0] addr_rom    [`RDWR_COUNT];
 reg [31:0] wr_data_rom [`RDWR_COUNT];

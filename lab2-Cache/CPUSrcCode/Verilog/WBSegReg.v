@@ -21,6 +21,8 @@ module WBSegReg(
     input wire MemToRegM,
     output reg MemToRegW
     );
+
+    `define FIFO
     
     // if chip not enable, output instruction ram read result
     // else output last read result
@@ -88,10 +90,11 @@ always @ (posedge clk or posedge rst) begin
     end
 end
 
+
 cache #(
     .LINE_ADDR_LEN  ( 3             ),
-    .SET_ADDR_LEN   ( 2             ),
-    .TAG_ADDR_LEN   ( 8             ),
+    .SET_ADDR_LEN   ( 3             ),
+    .TAG_ADDR_LEN   ( 10            ),
     .WAY_CNT        ( 4             )
 ) cache_test_instance (
     .clk            ( clk           ),
