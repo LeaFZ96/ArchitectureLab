@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: USTC ESLABï¼ˆEmbeded System Labï¼?
+// Company: USTC ESLABï¼ˆEmbeded System Labï¿???
 // Engineer: Haojun Xia(xhjustc@mail.ustc.edu.cn)
 // Create Date: 2019/02/08 16:29:41
 // Design Name: RISCV-Pipline CPU
@@ -92,10 +92,36 @@ module RV32Core(
     assign ResultM = LoadNpcM ? (PCM+4) : AluOutM;
     assign RegWriteData = ~MemToRegW?ResultW:DM_RD_Ext;
 
+    wire PredictF, PredictD, PredictE;
+    wire [1:0] PrWrong;
+    wire [31:0] PrNPCF, PrNPCD, PrNPCE;
+
+    reg [20:0] hit = 0;
+    reg [20:0] miss = 0;
+
+    always @ (posedge CPU_CLK) begin
+        if (PrWrong != 0)
+            miss = miss + 1;
+        else if (BranchE && PrWrong == 0)
+            hit = hit + 1;
+    end
+
     //Module connections
     // ---------------------------------------------
     // PC-IF
     // ---------------------------------------------
+    /*
+    BHT BTB1(
+        .clk(CPU_CLK),
+        .rst(CPU_RST),
+        .PCF(PCF),
+        .PCE(PCE),
+        .BranchE(BranchE),
+        .BranchTarget(BrNPC),
+        .PredictF(PredictF),
+        .PredictTarget(PrNPCF)
+    );*/
+
     NPC_Generator NPC_Generator1(
         .PCF(PCF),
         .JalrTarget(AluOutE), 
@@ -104,7 +130,11 @@ module RV32Core(
         .BranchE(BranchE),
         .JalD(JalD),
         .JalrE(JalrE),
-        .PC_In(PC_In)
+        .PC_In(PC_In),
+        .PredictF(PredictF),
+        .PrNPCF(PrNPCF),
+        .PrWrong(PrWrong),
+        .PCE(PCE)
     );
 
     IFSegReg IFSegReg1(
@@ -129,7 +159,11 @@ module RV32Core(
         .WE2(CPU_Debug_InstRAM_WE2),
         .RD2(CPU_Debug_InstRAM_RD2),
         .PCF(PCF),
-        .PCD(PCD) 
+        .PCD(PCD),
+        .PredictF(PredictF),
+        .PredictD(PredictD),
+        .PrNPCF(PrNPCF),
+        .PrNPCD(PrNPCD)
     );
 
     ControlUnit ControlUnit1(
@@ -210,7 +244,11 @@ module RV32Core(
         .AluSrc1D(AluSrc1D),
         .AluSrc1E(AluSrc1E),
         .AluSrc2D(AluSrc2D),
-        .AluSrc2E(AluSrc2E)
+        .AluSrc2E(AluSrc2E),
+        .PredictD(PredictD),
+        .PredictE(PredictE),
+        .PrNPCD(PrNPCD),
+        .PrNPCE(PrNPCE)
     	); 
 
     ALU ALU1(
@@ -316,7 +354,11 @@ module RV32Core(
         .StallW(StallW),
         .FlushW(FlushW),
         .Forward1E(Forward1E),
-        .Forward2E(Forward2E)
+        .Forward2E(Forward2E),
+        .PredictE(PredictE),
+        .PrNPCE(PrNPCE),
+        .BrNPC(BrNPC),
+        .PrWrong(PrWrong)
     	);    
     	         
 endmodule

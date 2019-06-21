@@ -12,16 +12,24 @@
 module NPC_Generator(
     input wire [31:0] PCF,JalrTarget, BranchTarget, JalTarget,
     input wire BranchE,JalD,JalrE,
-    output reg [31:0] PC_In
+    output reg [31:0] PC_In,
+    input wire PredictF,
+    input wire [31:0] PrNPCF,
+    input wire [1:0] PrWrong,
+    input wire [31:0] PCE
     );
     always @(*)
     begin
         if(JalrE)
             PC_In <= JalrTarget;
-        else if(BranchE)
+        else if(PrWrong[0])
             PC_In <= BranchTarget;
+        else if(PrWrong[1])
+            PC_In <= PCE + 4;
         else if(JalD)
             PC_In <= JalTarget;
+        else if(PredictF)
+            PC_In <= PrNPCF;
         else
             PC_In <= PCF+4;
     end

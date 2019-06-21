@@ -50,7 +50,12 @@ module EXSegReg(
     input wire AluSrc1D,
     output reg AluSrc1E,
     input wire [1:0] AluSrc2D,
-    output reg [1:0] AluSrc2E
+    output reg [1:0] AluSrc2E,
+
+    input wire PredictD,
+    output reg PredictE,
+    input wire [31:0] PrNPCD,
+    output reg [31:0] PrNPCE
     );
     initial begin
         PCE        = 32'b0; 
@@ -94,7 +99,10 @@ module EXSegReg(
                 BranchTypeE = 3'b0;
                 AluContrlE<=5'b0;
                 AluSrc1E<=1'b0; 
-                AluSrc2E<=2'b0;     
+                AluSrc2E<=2'b0;
+
+                PredictE <= 0;
+                PrNPCE <= 0;
             end else begin
                 PCE<=PCD; 
                 BrNPC<=JalNPC; 
@@ -114,6 +122,9 @@ module EXSegReg(
                 AluContrlE<=AluContrlD;
                 AluSrc1E<=AluSrc1D;
                 AluSrc2E<=AluSrc2D;         
+
+                PredictE <= PredictD;
+                PrNPCE <= PrNPCD;
             end
         end
     

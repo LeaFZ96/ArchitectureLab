@@ -16,8 +16,17 @@ module HarzardUnit(
     input wire [1:0] RegReadE,
     input wire [2:0] MemToRegE, RegWriteM, RegWriteW,
     output reg StallF, FlushF, StallD, FlushD, StallE, FlushE, StallM, FlushM, StallW, FlushW,
-    output reg [1:0] Forward1E, Forward2E
+    output reg [1:0] Forward1E, Forward2E,
+
+    input wire PredictE,
+    input wire [31:0] PrNPCE,
+    input wire [31:0] BrNPC,
+    output wire [1:0] PrWrong
     );
+
+    assign PrWrong[0] = (BranchE && !PredictE) || (BranchE && PredictE && BrNPC != PrNPCE);
+    assign PrWrong[1] = !BranchE && PredictE;
+    
     //
     //Stall and Flush signals generate
     always @ (*)
@@ -25,7 +34,7 @@ module HarzardUnit(
             {StallF,FlushF,StallD,FlushD,StallE,FlushE,StallM,FlushM,StallW,FlushW} <= 10'b0101010101;
         else if(DCacheMiss | ICacheMiss)
             {StallF,FlushF,StallD,FlushD,StallE,FlushE,StallM,FlushM,StallW,FlushW} <= 10'b1010101010;
-        else if(BranchE | JalrE)
+        else if(PrWrong != 0 | JalrE)
             {StallF,FlushF,StallD,FlushD,StallE,FlushE,StallM,FlushM,StallW,FlushW} <= 10'b0001010000;
         else if(MemToRegE & ((RdE==Rs1D)||(RdE==Rs2D)) )
             {StallF,FlushF,StallD,FlushD,StallE,FlushE,StallM,FlushM,StallW,FlushW} <= 10'b1010010000;

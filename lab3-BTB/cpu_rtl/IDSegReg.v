@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: USTC ESLAB£¨Embeded System Lab£©
+// Company: USTC ESLABï¿½ï¿½Embeded System Labï¿½ï¿½
 // Engineer: Haojun Xia & Xuan Wang
 // Create Date: 2019/02/08
 // Design Name: RISCV-Pipline CPU
@@ -23,8 +23,26 @@ module IDSegReg(
     output wire [31:0] RD2,
     //
     input wire [31:0] PCF,
-    output reg [31:0] PCD 
+    output reg [31:0] PCD,
+
+    input wire PredictF,
+    output reg PredictD,
+    input wire [31:0] PrNPCF,
+    output reg [31:0] PrNPCD
     );
+
+    always @ (posedge clk) begin
+        if (en) begin
+            if (clear) begin
+                PredictD <= 0;
+                PrNPCD <= 0;
+            end
+            else begin
+                PredictD <= PredictF;
+                PrNPCD <= PrNPCF;
+            end
+        end
+    end
     
     initial PCD = 0;
     always@(posedge clk)
